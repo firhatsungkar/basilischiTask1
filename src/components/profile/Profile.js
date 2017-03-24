@@ -9,9 +9,11 @@ import {
 export default class Profile extends Component {
   render() {
     const photo = require('../../images/me--photo.jpeg');
+    const logo = require('../../images/refactory--logo.png');
     return (
       <View style={styles.container}>
         <View style={styles.card}>
+          <Image style={styles.logo} source={logo} />        
           <Image style={styles.photo} source={photo} />
           <Text style={styles.name}>Muhamad Firhat</Text>
           <Text style={styles.class}>#basilischi</Text>
@@ -42,6 +44,11 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 60,
+  },
+  logo: {
+    width: 124,
+    height: 50,
+    marginBottom: 40,
   },
   name: {
     marginTop: 20,
