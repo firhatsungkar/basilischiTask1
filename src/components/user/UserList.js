@@ -76,18 +76,20 @@ export default class UserList extends Component {
     }
     render() {
         return (
-            <ScrollView style={styles.container}>
-                <ListView
-                    dataSource={this.state.dataSource}
-                    renderRow={this.renderRow}
-                />
+            <View style={styles.container}>
                 <Button
                     title='UPDATE'
                     onPress={()=>this.getData()}
                     color='lightblue'
                     style={{width:'100%'}}
                 />
-            </ScrollView>
+                <ListView
+                    dataSource={this.state.dataSource}
+                    renderRow={this.renderRow}
+                    style={{marginTop: 20}}
+                />
+                
+            </View>
         );
     }
 }
