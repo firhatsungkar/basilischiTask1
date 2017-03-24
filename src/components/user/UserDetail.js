@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   Alert,
 } from 'react-native';
+import Axios from 'axios';
 
 export default class UserDetail extends Component {
     constructor(props) {
@@ -25,7 +26,21 @@ export default class UserDetail extends Component {
     }
 
     deleteUser(){
-        this.props.navigation.goBack();
+        const userId = this.props.navigation.state.params.id;
+        const uri = 'http://192.168.1.14:3000/users/'+userId;
+        if(userId){
+            Axios({
+                method: 'delete',
+                url: uri
+            }).then((res)=>{
+                console.log(res);
+                Alert.alert('Deleted!')
+                this.props.navigation.goBack();
+            }).catch((err)=>{
+                console.log(err);
+                this.props.navigation.goBack();
+            })
+        }
     }
   
     render() {

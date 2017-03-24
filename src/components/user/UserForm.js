@@ -7,28 +7,81 @@ import {
   TouchableHighlight,
   Alert,
 } from 'react-native';
+import Axios from 'axios';
 
 export default class FormUser extends Component {
     constructor(props) {
         super(props);
         this.state= {
+            id: this.props.id,
             name: this.props.name,
             email: this.props.email,
             town: this.props.town,
             picture: this.props.picture,
         }
+        this.uri = 'http://192.168.1.14:3000/users/';
         this.onSubmit = this.onSubmit.bind(this);
     }
 
     componentWillMount(){
         if(this.props.navigation.state.params.update) {
-            const {name, email, town, picture} = this.props.navigation.state.params;
-            this.setState({name, email, town, picture});
+            const {id, name, email, town, picture} = this.props.navigation.state.params;
+            this.setState({id, name, email, town, picture});
+        } else {
+            this.getNewId();
         }
     }
 
+    getNewId(){
+        Axios.get(this.uri)
+            .then((response)=>{
+                let data = response.data;
+                let newId = data.length + 1;
+                this.setState({id: newId});
+            })
+            .catch((error)=>{
+                console.log(error);
+            })
+    }
+
+    createUser(newData) {
+        Axios({
+            method: 'post',
+            url: this.uri,
+            data: newData
+        }).then((response)=>{
+            Alert.alert('User Created');
+            this.props.navigation.goBack();
+        }).catch((error)=>{
+            console.log(error);
+            Alert.alert('Error cannot create new user!');
+        });
+    }
+
+    updateUser(newData) {
+        const userUri = this.uri + newData.id;
+        Axios({
+            method: 'patch',
+            url: userUri,
+            data: newData
+        }).then((response)=>{
+            Alert.alert('User Updated');
+            this.props.navigation.goBack();
+        }).catch((error)=>{
+            console.log(error);
+            Alert.alert('Error cannot update user!');
+        })
+    }
+
     onSubmit(){
-        Alert.alert('Submitted!');
+        const isUpdate = this.props.navigation.state.params.id;
+        const data = this.state;
+        console.log('Test a URI: '+this.uri);
+        if(isUpdate){
+            this.updateUser(data);
+        } else {
+            this.createUser(data);
+        }
     }
 
     render() {

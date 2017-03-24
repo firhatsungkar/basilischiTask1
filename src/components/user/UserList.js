@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import Axios from 'axios';
 import {
   StyleSheet,
   Alert,
+  Button,
   Text,
   Image,
   View,
@@ -10,11 +12,11 @@ import {
   TouchableHighlight,
 } from 'react-native';
 
-const user = [
-    {name: 'John Doe', email: 'johndoe@blabla.com', town: 'Philadelpia', picture:'http://placehold.it/250/250'},
-    {name: 'James Morison', email: 'morison.john@blabla.com', town: 'Missisiphi', picture:'http://placehold.it/250/250'},
-    {name: 'Malika Bells', email: 'malikabells@blabla.com', town: 'New York', picture:'http://placehold.it/250/250'},
-    {name: 'Jonathan Gregs', email: 'jonnagregs@blabla.com', town: 'Texas', picture:'http://placehold.it/250/250'},
+const dummy = [
+    {id: 1, name: 'John Doe', email: 'johndoe@blabla.com', town: 'Philadelpia', picture:'http://placehold.it/250/250'},
+    {id: 1, name: 'James Morison', email: 'morison.john@blabla.com', town: 'Missisiphi', picture:'http://placehold.it/250/250'},
+    {id: 1, name: 'Malika Bells', email: 'malikabells@blabla.com', town: 'New York', picture:'http://placehold.it/250/250'},
+    {id: 1, name: 'Jonathan Gregs', email: 'jonnagregs@blabla.com', town: 'Texas', picture:'http://placehold.it/250/250'},
 ]
 
 export default class UserList extends Component {
@@ -27,12 +29,29 @@ export default class UserList extends Component {
         this.renderRow = this.renderRow.bind(this);
         this.onSeeDetail = this.onSeeDetail.bind(this);
     }
+
+    getData() {
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});        
+        const uri = 'http://192.168.1.14:3000/users';
+        Axios.get(uri)
+            .then((response)=>{
+                const data = response.data;
+                this.setState({
+                    dataSource: ds.cloneWithRows(data)
+                });
+            })
+            .catch((error)=>{
+                console.log(error);
+                this.setState({
+                    dataSource: ds.cloneWithRows(dummy)
+                });
+            });
+    }
     
     componentWillMount(){
-        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});        
-        this.setState({
-            dataSource: ds.cloneWithRows(user)
-        })
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.setState({dataSource:ds.cloneWithRows(dummy)});
+        this.getData();
     }
 
     onSeeDetail(user) {
@@ -57,12 +76,18 @@ export default class UserList extends Component {
     }
     render() {
         return (
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 <ListView
                     dataSource={this.state.dataSource}
                     renderRow={this.renderRow}
                 />
-            </View>
+                <Button
+                    title='UPDATE'
+                    onPress={()=>this.getData()}
+                    color='lightblue'
+                    style={{width:'100%'}}
+                />
+            </ScrollView>
         );
     }
 }
